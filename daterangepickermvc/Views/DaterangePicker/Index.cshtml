@@ -1,18 +1,17 @@
 ﻿
 @{
     ViewBag.Title = "Index";
+    
 }
 
  
 
 <h1>Hihi</h1>
-
-<div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-    <i class="fa fa-calendar"></i>&nbsp;
-    <span></span> <i class="fa fa-caret-down"></i>
-</div>
-@ViewBag.StartDate
-@ViewBag.EndDate
+<input type="hidden" name="start" value="@ViewBag.StartDate" />
+<input type="hidden" name="end" value="@ViewBag.EndDate" />
+<input type="text" name="datefilter" value="" />
+<p>Start: @ViewBag.StartDate</p>
+<p>End: @ViewBag.EndDate</p>
 
 
 @section Scripts{
@@ -20,31 +19,32 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script type="text/javascript">
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-
-        $('#reportrange').daterangepicker({
-                startDate: start,
-                endDate: end,
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [
-                        moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')
-                    ]
-                }
-            });
-
-        $('#reportrange').on('apply.daterangepicker',
-            function (ev, picker) {
-                $('#reportrange span').html(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-                window.location.href = `/DaterangePicker/Index?startDate=${picker.startDate.format('MM/DD/YYYY')}&endDate=${picker.endDate.format('MM/DD/YYYY')}`;
-            });
-
-
+        var start, end;
+        if ($('input[name="start"]').val() == null || $('input[name="start"]').val().length == 0) {
+            start = moment().subtract(29, 'days');
+            end = moment();
+        } else {
+            start = moment(new Date($('input[name="start"]').val()));
+            end = moment(new Date($('input[name="end"]').val()));
+        }
+        $('input[name="datefilter"]').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [
+                    moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')
+                ]
+            }
+        });
+        $('input[name="datefilter"]').val(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+        $('input[name="datefilter"]').on('apply.daterangepicker', function (ev, picker) {
+            window.location.href = `/DaterangePicker/Index?startDate=${picker.startDate.format('MM/DD/YYYY')}&endDate=${picker.endDate.format('MM/DD/YYYY')}`;
+        });
     </script>
 }
 
